@@ -23,6 +23,18 @@ function App() {
       canvas.width = newWidth;
       canvas.height = newHeight;
       context.drawImage(image, 0, 0, newWidth, newHeight);
+
+      const imageData = context.getImageData(0, 0, newWidth, newHeight);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const average = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = average;
+        data[i + 1] = average;
+        data[i + 2] = average;
+      }
+
+      context.putImageData(imageData, 0, 0);
     };
   }, []);
 
