@@ -41,13 +41,103 @@ const putASCIIonSquare = (
   y: number,
   average: number
 ) => {
-  // function divides the 255 color by 5 creating 51 sectors that correspond to ASCII values
-  const value = (average - (average % 5)) / 5;
-  const charValue = String.fromCharCode("!".charCodeAt(0) + value);
-
+  // function divides the 255 color by 3 creating 85 sectors that correspond to ASCII values
+  const value = (average - (average % 3)) / 3;
+  const grayscaledASCII = [
+    " ",
+    ".",
+    "-",
+    "'",
+    ":",
+    "_",
+    ",",
+    "^",
+    "=",
+    ";",
+    ">",
+    "<",
+    "+",
+    "!",
+    "r",
+    "c",
+    "*",
+    "/",
+    "z",
+    "?",
+    "s",
+    "L",
+    "T",
+    "v",
+    ")",
+    "J",
+    "7",
+    "|",
+    "F",
+    "i",
+    "{",
+    "C",
+    "}",
+    "f",
+    "I",
+    "3",
+    "1",
+    "t",
+    "l",
+    "u",
+    "[",
+    "n",
+    "e",
+    "o",
+    "Z",
+    "5",
+    "Y",
+    "x",
+    "j",
+    "y",
+    "a",
+    "]",
+    "2",
+    "E",
+    "S",
+    "w",
+    "q",
+    "k",
+    "P",
+    "6",
+    "h",
+    "9",
+    "d",
+    "4",
+    "V",
+    "p",
+    "O",
+    "G",
+    "b",
+    "U",
+    "A",
+    "K",
+    "X",
+    "H",
+    "m",
+    "8",
+    "R",
+    "D",
+    "#",
+    "$",
+    "B",
+    "g",
+    "0",
+    "M",
+    "N",
+    "W",
+    "Q",
+    "%",
+    "&",
+    "@",
+  ];
   context.font = `${size}px Arial`;
-  context.fillStyle = "black";
-  context.fillText(charValue, x, y + size);
+  context.fillStyle = "white";
+  context.fillText(grayscaledASCII[value], x, y + size);
 };
 
 function App() {
@@ -78,7 +168,7 @@ function App() {
       outputCanvas.height = newHeight;
 
       inputContext.drawImage(image, 0, 0, newWidth, newHeight);
-      outputContext.fillStyle = "white";
+      outputContext.fillStyle = "black";
       outputContext.fillRect(0, 0, newWidth, newHeight);
 
       const imageData = inputContext.getImageData(0, 0, newWidth, newHeight);
