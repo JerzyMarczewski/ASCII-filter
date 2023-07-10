@@ -1,5 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import image1 from "../assets/image1.jpeg";
+import Webcam from "react-webcam";
+
+const videoConstraints = {
+  width: 360,
+  height: 360,
+  facingMode: "user",
+};
 
 const getSquareIndexes = (
   x: number,
@@ -140,8 +147,11 @@ const putASCIIonSquare = (
 };
 
 function FilterViewer() {
+  const webcamRef = useRef<Webcam | null>(null);
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const [screenshot, setScreenshot] = useState<string | null>(null);
 
   useEffect(() => {
     const inputCanvas = inputCanvasRef.current;
@@ -152,11 +162,13 @@ function FilterViewer() {
     if (!inputCanvas || !inputContext || !outputCanvas || !outputContext)
       return;
 
+    if (!screenshot) return;
+
     const image = new Image();
-    image.src = image1;
+    image.src = screenshot;
 
     image.onload = () => {
-      const newWidth = 500;
+      const newWidth = 360;
       const scaledHeight = (image.height * newWidth) / image.width;
       const newHeight = scaledHeight - (scaledHeight % 10);
 
@@ -183,10 +195,29 @@ function FilterViewer() {
         }
       }
     };
+  }, [screenshot]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const imageSrc = webcamRef?.current?.getScreenshot();
+      if (imageSrc) setScreenshot(imageSrc);
+    }, 10);
+
+    () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
     <>
+      <Webcam
+        audio={false}
+        height={0}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        width={0}
+        videoConstraints={videoConstraints}
+      />
       <canvas ref={inputCanvasRef}></canvas>
       <canvas ref={outputCanvasRef}></canvas>
     </>
