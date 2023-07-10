@@ -169,12 +169,10 @@ function FilterViewer() {
 
     image.onload = () => {
       const newWidth = 360;
-      const scaledHeight = (image.height * newWidth) / image.width;
-      const newHeight = scaledHeight - (scaledHeight % 10);
+      const newHeight = 360;
 
       inputCanvas.width = newWidth;
       inputCanvas.height = newHeight;
-
       outputCanvas.width = newWidth;
       outputCanvas.height = newHeight;
 
