@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import image1 from "../assets/image1.jpeg";
 import Webcam from "react-webcam";
 
 const videoConstraints = {
@@ -45,7 +44,10 @@ const putASCIIonSquare = (
   size: number,
   x: number,
   y: number,
-  average: number
+  average: number,
+  R: number,
+  G: number,
+  B: number
 ) => {
   // function divides the 255 color by 3 creating 85 sectors that correspond to ASCII values
   const value = (average - (average % 3)) / 3;
@@ -142,7 +144,7 @@ const putASCIIonSquare = (
     "@",
   ];
   context.font = `${size}px Arial`;
-  context.fillStyle = "white";
+  context.fillStyle = `rgb(${R}, ${G}, ${B})`;
   context.fillText(grayscaledASCII[value], x, y + size);
 };
 
@@ -189,7 +191,7 @@ function FilterViewer() {
         for (let x = 0; x < newWidth; x += squareSize) {
           const indexes = getSquareIndexes(x, y, newWidth, squareSize);
           const average = getSquareAverage(data, indexes, squareSize);
-          putASCIIonSquare(outputContext, squareSize, x, y, average);
+          putASCIIonSquare(outputContext, squareSize, x, y, average, 255, 0, 0);
         }
       }
     };
