@@ -18,16 +18,16 @@ function App() {
     void checkWebcamAccess();
   }, []);
 
-  if (webcamIsAllowed === null) return <div>Checking webcam access...</div>;
+  // if (webcamIsAllowed === null) return <div>Checking webcam access...</div>;
 
-  if (!webcamIsAllowed)
-    return (
-      <div>Webcam isn't allowed. Please allow to use the application.</div>
-    );
+  // if (!webcamIsAllowed)
+  //   return (
+  //     <div>Webcam isn't allowed. Please allow to use the application.</div>
+  //   );
 
   return (
     <>
-      <FilterViewer />
+      <h1>ASCII Filter</h1>
     </>
   );
 }
