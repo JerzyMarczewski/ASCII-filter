@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
-type filterType = "ascii" | "ascii colored" | "pixelized";
+type filterType = "ascii" | "pixelized";
 
 const videoConstraints = {
   width: 360,
@@ -154,13 +154,24 @@ const putASCIIonSquare = (
   context.fillText(grayscaledASCII[value], x, y + size);
 };
 
+const colorSquareByAverage = (
+  context: CanvasRenderingContext2D,
+  size: number,
+  x: number,
+  y: number,
+  average: number[]
+) => {
+  context.fillStyle = `rgb(${average[0]}, ${average[1]}, ${average[2]})`;
+  context.fillRect(x, y, size, size);
+};
+
 function FilterViewer() {
   const webcamRef = useRef<Webcam | null>(null);
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [chosenFilter, setChosenFilter] = useState<filterType>("ascii");
+  const [chosenFilter, setChosenFilter] = useState<filterType>("pixelized");
 
   useEffect(() => {
     const inputCanvas = inputCanvasRef.current;
@@ -203,17 +214,8 @@ function FilterViewer() {
 
           if (chosenFilter === "ascii") {
             putASCIIonSquare(outputContext, squareSize, x, y, average);
-          } else if (chosenFilter === "ascii colored") {
-            putASCIIonSquare(
-              outputContext,
-              squareSize,
-              x,
-              y,
-              average,
-              255,
-              255,
-              255
-            );
+          } else if (chosenFilter === "pixelized") {
+            colorSquareByAverage(outputContext, squareSize, x, y, average);
           }
         }
       }
@@ -247,7 +249,6 @@ function FilterViewer() {
       <canvas ref={outputCanvasRef}></canvas>
       <div className="filterOptions">
         <button className="filterOption">ASCII</button>
-        <button className="filterOption">Colored ASCII</button>
         <button className="filterOption">Pixelized</button>
       </div>
     </>
