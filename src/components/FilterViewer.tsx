@@ -198,8 +198,10 @@ function FilterViewer() {
   }, [screenshot]);
 
   useEffect(() => {
+    if (!webcamRef) return;
+
     const interval = setInterval(() => {
-      const imageSrc = webcamRef?.current?.getScreenshot();
+      const imageSrc = webcamRef.current?.getScreenshot();
       if (imageSrc) setScreenshot(imageSrc);
     }, 10);
 
