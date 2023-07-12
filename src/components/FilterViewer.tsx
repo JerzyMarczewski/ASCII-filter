@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
+type filterType = "ascii" | "ascii colored" | "pixelized";
+
 const videoConstraints = {
   width: 360,
   height: 360,
@@ -28,15 +30,16 @@ const getSquareAverage = (
   indexes: number[],
   size: number
 ) => {
-  let sum = 0;
+  const sum = [0, 0, 0];
   for (const index of indexes) {
     const R = data[index];
     const G = data[index + 1];
     const B = data[index + 2];
-    sum += (R + G + B) / 3;
+    sum[0] += R;
+    sum[1] += G;
+    sum[2] += B;
   }
-  const average = sum / size ** 2;
-  return average;
+  return [sum[0] / size ** 2, sum[1] / size ** 2, sum[2] / size ** 2];
 };
 
 const putASCIIonSquare = (
@@ -44,13 +47,14 @@ const putASCIIonSquare = (
   size: number,
   x: number,
   y: number,
-  average: number,
-  R: number,
-  G: number,
-  B: number
+  average: number[],
+  R: number | undefined = undefined,
+  G: number | undefined = undefined,
+  B: number | undefined = undefined
 ) => {
   // function divides the 255 color by 3 creating 85 sectors that correspond to ASCII values
-  const value = (average - (average % 3)) / 3;
+  const averageRGB = (average[0] + average[1] + average[2]) / 3;
+  const value = (averageRGB - (averageRGB % 3)) / 3;
   const grayscaledASCII = [
     " ",
     ".",
@@ -143,8 +147,10 @@ const putASCIIonSquare = (
     "&",
     "@",
   ];
+  if (!R || !G || !B) context.fillStyle = "white";
+  else context.fillStyle = `rgb(${R}, ${G}, ${B})`;
+
   context.font = `${size}px Arial`;
-  context.fillStyle = `rgb(${R}, ${G}, ${B})`;
   context.fillText(grayscaledASCII[value], x, y + size);
 };
 
@@ -154,10 +160,13 @@ function FilterViewer() {
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [chosenFilter, setChosenFilter] = useState<filterType>("ascii");
 
   useEffect(() => {
     const inputCanvas = inputCanvasRef.current;
-    const inputContext = inputCanvas?.getContext("2d");
+    const inputContext = inputCanvas?.getContext("2d", {
+      willReadFrequently: true,
+    });
     const outputCanvas = outputCanvasRef.current;
     const outputContext = outputCanvas?.getContext("2d");
 
@@ -191,7 +200,21 @@ function FilterViewer() {
         for (let x = 0; x < newWidth; x += squareSize) {
           const indexes = getSquareIndexes(x, y, newWidth, squareSize);
           const average = getSquareAverage(data, indexes, squareSize);
-          putASCIIonSquare(outputContext, squareSize, x, y, average, 255, 0, 0);
+
+          if (chosenFilter === "ascii") {
+            putASCIIonSquare(outputContext, squareSize, x, y, average);
+          } else if (chosenFilter === "ascii colored") {
+            putASCIIonSquare(
+              outputContext,
+              squareSize,
+              x,
+              y,
+              average,
+              255,
+              255,
+              255
+            );
+          }
         }
       }
     };
@@ -214,14 +237,19 @@ function FilterViewer() {
     <>
       <Webcam
         audio={false}
-        height={0}
+        height={360}
+        width={360}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        width={0}
         videoConstraints={videoConstraints}
       />
       <canvas ref={inputCanvasRef}></canvas>
       <canvas ref={outputCanvasRef}></canvas>
+      <div className="filterOptions">
+        <button className="filterOption">ASCII</button>
+        <button className="filterOption">Colored ASCII</button>
+        <button className="filterOption">Pixelized</button>
+      </div>
     </>
   );
 }
