@@ -1,0 +1,9 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+.title {
+  font-size: 4rem;
+  color: var(--primary-color-1);
+}
