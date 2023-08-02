@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import styles from "./styles/App.module.css";
+import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
 
 function App() {
@@ -26,9 +27,11 @@ function App() {
   //   );
 
   return (
-    <>
-      <h1>ASCII Filter</h1>
-    </>
+    <div className={styles.container}>
+      <h1 className={styles.title}>ASCII Filter</h1>
+      <span className={styles.play}></span>
+      <span className={styles.loader}></span>
+    </div>
   );
 }
 
