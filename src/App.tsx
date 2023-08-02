@@ -4,20 +4,33 @@ import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
 
 function App() {
-  const [webcamIsAllowed, setWebcamIsAllowed] = useState<boolean | null>(null);
+  type playButtonStateType = "default" | "loading" | "reload" | "final";
+  const [playButtonState, setPlayButtonState] =
+    useState<playButtonStateType>("default");
+
+  const isWebcamAllowed = async (): Promise<boolean> => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const checkWebcamAccess = async () => {
+    const allowed = await isWebcamAllowed();
+    if (allowed) setPlayButtonState("final");
+    else setPlayButtonState("reload");
+  };
 
   useEffect(() => {
-    const checkWebcamAccess = async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-        setWebcamIsAllowed(true);
-      } catch (error) {
-        setWebcamIsAllowed(false);
-      }
-    };
-
-    void checkWebcamAccess();
-  }, []);
+    if (playButtonState === "loading") {
+      setTimeout(() => {
+        void checkWebcamAccess();
+        setPlayButtonState("final");
+      }, 500);
+    }
+  }, [playButtonState]);
 
   // if (webcamIsAllowed === null) return <div>Checking webcam access...</div>;
 
@@ -29,6 +42,7 @@ function App() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>ASCII Filter</h1>
+      <p onClick={() => setPlayButtonState("loading")}>{playButtonState}</p>
       <span className={styles.play}></span>
       <span className={styles.loader}></span>
     </div>
