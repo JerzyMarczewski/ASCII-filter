@@ -11,7 +11,7 @@
   text-shadow: 4px 4px var(--secondary-color-1);
 }
 
-/* .playButton {
+.playButton {
   opacity: 1;
   width: 4rem;
   height: 4rem;
@@ -23,6 +23,7 @@
 }
 
 .playButton:after {
+  opacity: 1;
   content: '';
   position: absolute;
   width: 1rem;
@@ -35,19 +36,17 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-} */
-
-.playButton {
-  color: white;
 }
 
 .playButton-exit {
+  
   opacity: 1;
 }
 
-.playButton-exit-active {
+.playButton.playButton-exit-active::after {
+  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
-  transition: opacity 500ms;
+  transition: all 500ms;
 }
 
 .playButton-exit-done {

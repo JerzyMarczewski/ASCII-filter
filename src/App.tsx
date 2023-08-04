@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./styles/App.css";
 import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
@@ -10,6 +10,9 @@ function App() {
     useState<playButtonStateType>("default");
   const [playButtonIsDisplayed, setPlayButtonIsDisplayed] =
     useState<boolean>(true);
+  const [loaderIsDisplayed, setLoaderIsDisplayed] = useState<boolean>(false);
+
+  const playButtonRef = useRef(null);
 
   const isWebcamAllowed = async (): Promise<boolean> => {
     try {
@@ -30,8 +33,7 @@ function App() {
     if (playButtonState === "loading") {
       setTimeout(() => {
         void checkWebcamAccess();
-        setPlayButtonState("final");
-      }, 500);
+      }, 300);
     }
   }, [playButtonState]);
 
@@ -45,20 +47,22 @@ function App() {
   return (
     <div className="container">
       <h1 className="title">ASCII Filter</h1>
-      <p
-        onClick={() => {
-          setPlayButtonIsDisplayed(false);
-          setPlayButtonState("loading");
-        }}
-      >
-        {playButtonState}
-      </p>
+      <p>{playButtonState}</p>
       <CSSTransition
+        nodeRef={playButtonRef}
         in={playButtonIsDisplayed}
         timeout={500}
         classNames="playButton"
+        unmountOnExit
       >
-        <span className="playButton">button</span>
+        <span
+          ref={playButtonRef}
+          className="playButton"
+          onClick={() => {
+            setPlayButtonIsDisplayed(false);
+            setPlayButtonState("loading");
+          }}
+        ></span>
       </CSSTransition>
       {/* <span className={styles.loader}></span> */}
     </div>
