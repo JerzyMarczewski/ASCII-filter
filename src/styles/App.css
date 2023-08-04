@@ -53,11 +53,6 @@
   color: red;
 }
 
-@keyframes disappear {
-  50% {transform: translate(-50%, -50%) scale(0.5)}
-  100% { transform: translate(-50%, -50%) scale(0)}
-}
-
 .loader {
   width: 4rem;
   height: 4rem;
@@ -81,13 +76,4 @@
   top: 50%;
   transform: translate(-50%, -50%);
   animation: scaleUp 1s linear infinite;
-}
-
-@keyframes scaleUp {
-  0% { transform: translate(-50%, -50%) scale(0) }
-  60% , 100% { transform: translate(-50%, -50%)  scale(1)}
-}
-@keyframes pulse {
-  0% , 60% , 100%{ transform:  scale(1) }
-  80% { transform:  scale(1.2)}
 }
