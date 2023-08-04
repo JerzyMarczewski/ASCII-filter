@@ -58,8 +58,9 @@ function App() {
         in={playButtonIsDisplayed}
         timeout={500}
         classNames="playButton"
-        unmountOnExit
         onExited={() => setLoaderIsDisplayed(true)}
+        enter
+        unmountOnExit
       >
         <span
           ref={playButtonRef}
@@ -73,10 +74,10 @@ function App() {
       <CSSTransition
         nodeRef={loaderRef}
         in={loaderIsDisplayed}
-        timeout={500}
+        timeout={0}
         classNames="loader"
-        unmountOnExit
         onExited={() => setReloaderIsDisplayed(true)}
+        unmountOnExit
       >
         <span ref={loaderRef} className="loader"></span>
       </CSSTransition>
@@ -85,12 +86,18 @@ function App() {
         in={reloaderIsDisplayed}
         timeout={500}
         classNames="reloader"
+        onExited={() => setLoaderIsDisplayed(true)}
         unmountOnExit
-        onExited={() => setPlayButtonIsDisplayed(true)}
       >
-        <span ref={reloaderRef} className="reloader"></span>
+        <span
+          ref={reloaderRef}
+          className="reloader"
+          onClick={() => {
+            setReloaderIsDisplayed(false);
+            setPlayButtonState("loading");
+          }}
+        ></span>
       </CSSTransition>
-      {/* <span className={styles.loader}></span> */}
     </div>
   );
 }
