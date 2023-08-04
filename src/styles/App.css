@@ -50,7 +50,7 @@
 }
 
 .playButton-exit-done {
-  color: red;
+  display: none;
 }
 
 .loader {
@@ -79,6 +79,10 @@
   animation: scaleUp 1s linear infinite;
 }
 
+.loader-exit-done {
+  display: none;
+}
+
 @keyframes scaleUp {
   0% { transform: translate(-50%, -50%) scale(0) }
   60% , 100% { transform: translate(-50%, -50%)  scale(1)}
@@ -93,7 +97,32 @@
   height: 4rem;
   border: 5px solid var(--secondary-color-1);
   border-radius: 50%;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   box-sizing: border-box;
   position: relative;
+}
+
+.reloader.reloader-enter .reloaderIcon{
+  font-size: 0rem;
+}
+
+.reloader.reloader-enter-active .reloaderIcon{
+  font-size: 1.5rem;
+  transition: font-size 500ms;
+}
+
+.reloader .reloaderIcon {
+  color: var(--primary-color-1);
+  font-size: 1.5rem;
+}
+
+.reloader.reloader-exit-active .reloaderIcon{
+  font-size: 0rem;
+  transition: font-size 500ms;
+}
+
+.reloader-exit-done {
+  display: none;
 }
