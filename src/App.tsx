@@ -3,6 +3,7 @@ import "./styles/App.css";
 import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
 import { CSSTransition } from "react-transition-group";
+import { Icon } from "@iconify/react";
 
 function App() {
   type playButtonStateType = "default" | "loading" | "reload" | "final";
@@ -59,7 +60,6 @@ function App() {
         timeout={500}
         classNames="playButton"
         onExited={() => setLoaderIsDisplayed(true)}
-        enter
         unmountOnExit
       >
         <span
@@ -86,6 +86,7 @@ function App() {
         in={reloaderIsDisplayed}
         timeout={500}
         classNames="reloader"
+        enter
         onExited={() => setLoaderIsDisplayed(true)}
         unmountOnExit
       >
@@ -96,7 +97,9 @@ function App() {
             setReloaderIsDisplayed(false);
             setPlayButtonState("loading");
           }}
-        ></span>
+        >
+          <Icon icon="tabler:reload" className="reloaderIcon" />
+        </span>
       </CSSTransition>
     </div>
   );
