@@ -11,8 +11,12 @@ function App() {
   const [playButtonIsDisplayed, setPlayButtonIsDisplayed] =
     useState<boolean>(true);
   const [loaderIsDisplayed, setLoaderIsDisplayed] = useState<boolean>(false);
+  const [reloaderIsDisplayed, setReloaderIsDisplayed] =
+    useState<boolean>(false);
 
   const playButtonRef = useRef(null);
+  const loaderRef = useRef(null);
+  const reloaderRef = useRef(null);
 
   const isWebcamAllowed = async (): Promise<boolean> => {
     try {
@@ -33,7 +37,8 @@ function App() {
     if (playButtonState === "loading") {
       setTimeout(() => {
         void checkWebcamAccess();
-      }, 300);
+        setLoaderIsDisplayed(false);
+      }, 3000);
     }
   }, [playButtonState]);
 
@@ -54,6 +59,7 @@ function App() {
         timeout={500}
         classNames="playButton"
         unmountOnExit
+        onExited={() => setLoaderIsDisplayed(true)}
       >
         <span
           ref={playButtonRef}
@@ -63,6 +69,26 @@ function App() {
             setPlayButtonState("loading");
           }}
         ></span>
+      </CSSTransition>
+      <CSSTransition
+        nodeRef={loaderRef}
+        in={loaderIsDisplayed}
+        timeout={500}
+        classNames="loader"
+        unmountOnExit
+        onExited={() => setReloaderIsDisplayed(true)}
+      >
+        <span ref={loaderRef} className="loader"></span>
+      </CSSTransition>
+      <CSSTransition
+        nodeRef={reloaderRef}
+        in={reloaderIsDisplayed}
+        timeout={500}
+        classNames="reloader"
+        unmountOnExit
+        onExited={() => setPlayButtonIsDisplayed(true)}
+      >
+        <span ref={reloaderRef} className="reloader"></span>
       </CSSTransition>
       {/* <span className={styles.loader}></span> */}
     </div>
