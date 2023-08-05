@@ -30,25 +30,28 @@ function App() {
 
   const checkWebcamAccess = async () => {
     const allowed = await isWebcamAllowed();
-    if (allowed) setPlayButtonState("final");
-    else setPlayButtonState("reload");
+    if (allowed) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   useEffect(() => {
-    if (playButtonState === "loading") {
-      setTimeout(() => {
-        void checkWebcamAccess();
+    if (playButtonState !== "loading") return;
+
+    setTimeout(async () => {
+      const webcamIsAllowed = await checkWebcamAccess();
+      if (webcamIsAllowed) {
+        setPlayButtonState("final");
+      } else {
+        setPlayButtonState("reload");
         setLoaderIsDisplayed(false);
-      }, 3000);
-    }
+      }
+    }, 3000);
   }, [playButtonState]);
 
-  // if (webcamIsAllowed === null) return <div>Checking webcam access...</div>;
-
-  // if (!webcamIsAllowed)
-  //   return (
-  //     <div>Webcam isn't allowed. Please allow to use the application.</div>
-  //   );
+  if (playButtonState === "final") return <FilterViewer />;
 
   return (
     <div className="container">
