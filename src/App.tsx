@@ -53,7 +53,6 @@ function App() {
   return (
     <div className="container">
       <h1 className="title">ASCII Filter</h1>
-      <p>{playButtonState}</p>
       <CSSTransition
         nodeRef={playButtonRef}
         in={playButtonIsDisplayed}
