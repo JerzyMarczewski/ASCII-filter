@@ -5,7 +5,7 @@ import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
 import MainButton from "./components/MainButton";
 import { RootState } from "./app/store";
-import { setAppStatus } from "./features/appStatusSlice";
+import { setAppStatus, setWebcamDimensions } from "./features/appStatusSlice";
 import { setLoaderIsDisplayed } from "./features/mainButtonSlice";
 import { CSSTransition } from "react-transition-group";
 
@@ -18,7 +18,15 @@ function App() {
 
   const isWebcamAllowed = async (): Promise<boolean> => {
     try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const track = stream.getVideoTracks()[0];
+      const settings = track.getSettings();
+      const width = settings.width;
+      const height = settings.height;
+
+      if (width !== undefined && height !== undefined)
+        dispatch(setWebcamDimensions({ x: width, y: height }));
+
       return true;
     } catch (error) {
       return false;
