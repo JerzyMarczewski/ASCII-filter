@@ -9,6 +9,7 @@ import {
   setReloaderIsDisplayed,
 } from "../features/mainButtonSlice";
 import { setAppStatus } from "../features/appStatusSlice";
+import "../styles/MainButton.css";
 
 const MainButton = () => {
   const playButtonIsDisplayed = useSelector(

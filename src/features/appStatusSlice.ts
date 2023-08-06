@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type statusType = "default" | "loading" | "reload" | "final";
-type webcamDimensionsType = { x: number; y: number };
+export type webcamDimensionsType = { x: number; y: number };
 
 interface appStatusState {
   status: statusType;
