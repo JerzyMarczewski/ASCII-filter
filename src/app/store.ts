@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import mainButtonSlice from "../features/mainButtonSlice";
-import appStatusSlice from "../features/appStatusSlice";
+import mainButtonReducer from "../features/mainButtonSlice";
+import appStatusReducer from "../features/appStatusSlice";
 
 const store = configureStore({
   reducer: {
-    appStatus: appStatusSlice,
-    mainButton: mainButtonSlice,
+    appStatus: appStatusReducer,
+    mainButton: mainButtonReducer,
   },
 });
 
