@@ -1,23 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import "./styles/App.css";
 import "./styles/index.css";
 import FilterViewer from "./components/FilterViewer";
-import { CSSTransition } from "react-transition-group";
-import { Icon } from "@iconify/react";
+import MainButton from "./components/MainButton";
+import { RootState } from "./app/store";
+import { setAppStatus } from "./features/appStatusSlice";
+import { setLoaderIsDisplayed } from "./features/mainButtonSlice";
 
 function App() {
-  type playButtonStateType = "default" | "loading" | "reload" | "final";
-  const [playButtonState, setPlayButtonState] =
-    useState<playButtonStateType>("default");
-  const [playButtonIsDisplayed, setPlayButtonIsDisplayed] =
-    useState<boolean>(true);
-  const [loaderIsDisplayed, setLoaderIsDisplayed] = useState<boolean>(false);
-  const [reloaderIsDisplayed, setReloaderIsDisplayed] =
-    useState<boolean>(false);
+  const status = useSelector((state: RootState) => state.appStatus.status);
 
-  const playButtonRef = useRef(null);
-  const loaderRef = useRef(null);
-  const reloaderRef = useRef(null);
+  const dispatch = useDispatch();
 
   const isWebcamAllowed = async (): Promise<boolean> => {
     try {
@@ -38,71 +32,24 @@ function App() {
   };
 
   useEffect(() => {
-    if (playButtonState !== "loading") return;
+    if (status !== "loading") return;
 
+    // remove timeout for production
     setTimeout(async () => {
       const webcamIsAllowed = await checkWebcamAccess();
       if (webcamIsAllowed) {
-        setPlayButtonState("final");
+        dispatch(setAppStatus("final"));
       } else {
-        setPlayButtonState("reload");
-        setLoaderIsDisplayed(false);
+        dispatch(setAppStatus("reload"));
+        dispatch(setLoaderIsDisplayed(false)); // think about moving this to the main Button component
       }
     }, 3000);
-  }, [playButtonState]);
-
-  if (playButtonState === "final") return <FilterViewer />;
+  }, [status]);
 
   return (
     <div className="container">
       <h1 className="title">ASCII Filter</h1>
-      <CSSTransition
-        nodeRef={playButtonRef}
-        in={playButtonIsDisplayed}
-        timeout={500}
-        classNames="playButton"
-        onExited={() => setLoaderIsDisplayed(true)}
-        unmountOnExit
-      >
-        <span
-          ref={playButtonRef}
-          className="playButton"
-          onClick={() => {
-            setPlayButtonIsDisplayed(false);
-            setPlayButtonState("loading");
-          }}
-        ></span>
-      </CSSTransition>
-      <CSSTransition
-        nodeRef={loaderRef}
-        in={loaderIsDisplayed}
-        timeout={0}
-        classNames="loader"
-        onExited={() => setReloaderIsDisplayed(true)}
-        unmountOnExit
-      >
-        <span ref={loaderRef} className="loader"></span>
-      </CSSTransition>
-      <CSSTransition
-        nodeRef={reloaderRef}
-        in={reloaderIsDisplayed}
-        timeout={500}
-        classNames="reloader"
-        enter
-        onExited={() => setLoaderIsDisplayed(true)}
-        unmountOnExit
-      >
-        <span
-          ref={reloaderRef}
-          className="reloader"
-          onClick={() => {
-            setReloaderIsDisplayed(false);
-            setPlayButtonState("loading");
-          }}
-        >
-          <Icon icon="tabler:reload" className="reloaderIcon" />
-        </span>
-      </CSSTransition>
+      {status === "final" ? <FilterViewer /> : <MainButton />}
     </div>
   );
 }
