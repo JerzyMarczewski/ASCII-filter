@@ -1,11 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
+import { webcamDimensionsType } from "../features/appStatusSlice";
+import { RootState } from "../app/store";
+import { useSelector } from "react-redux";
 
 type filterType = "ascii" | "pixelized";
 
-const videoConstraints = {
-  width: 360,
-  height: 360,
+interface videoConstraintsInterface {
+  width: number | undefined;
+  height: number | undefined;
+  facingMode: "user";
+}
+
+const videoConstraints: videoConstraintsInterface = {
+  width: undefined,
+  height: undefined,
   facingMode: "user",
 };
 
@@ -166,12 +175,49 @@ const colorSquareByAverage = (
 };
 
 function FilterViewer() {
+  const webcamDimensions = useSelector(
+    (state: RootState) => state.appStatus.webcamDimensions
+  );
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [videoResolution, setVideoResolution] =
+    useState<webcamDimensionsType | null>(null);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [chosenFilter, setChosenFilter] = useState<filterType>("pixelized");
+
   const webcamRef = useRef<Webcam | null>(null);
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [chosenFilter, setChosenFilter] = useState<filterType>("pixelized");
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  });
+
+  useEffect(() => {
+    if (!webcamDimensions) return;
+
+    let newWidth = undefined;
+    let newHeight = undefined;
+
+    if (windowWidth < webcamDimensions.x) {
+      newWidth = webcamDimensions.x / 2;
+      newHeight = webcamDimensions.y / 2;
+    } else {
+      newWidth = webcamDimensions.x;
+      newHeight = webcamDimensions.y;
+    }
+
+    setVideoResolution({ x: newWidth, y: newHeight });
+    videoConstraints.width = newWidth;
+    videoConstraints.height = newHeight;
+  }, [webcamDimensions, windowWidth]);
 
   useEffect(() => {
     const inputCanvas = inputCanvasRef.current;
@@ -184,32 +230,36 @@ function FilterViewer() {
     if (!inputCanvas || !inputContext || !outputCanvas || !outputContext)
       return;
 
+    if (!videoResolution) return;
+
     if (!screenshot) return;
 
     const image = new Image();
     image.src = screenshot;
 
     image.onload = () => {
-      const newWidth = 360;
-      const newHeight = 360;
+      inputCanvas.width = videoResolution.x;
+      inputCanvas.height = videoResolution.y;
+      outputCanvas.width = videoResolution.x;
+      outputCanvas.height = videoResolution.y;
 
-      inputCanvas.width = newWidth;
-      inputCanvas.height = newHeight;
-      outputCanvas.width = newWidth;
-      outputCanvas.height = newHeight;
-
-      inputContext.drawImage(image, 0, 0, newWidth, newHeight);
+      inputContext.drawImage(image, 0, 0, videoResolution.x, videoResolution.y);
       outputContext.fillStyle = "black";
-      outputContext.fillRect(0, 0, newWidth, newHeight);
+      outputContext.fillRect(0, 0, videoResolution.x, videoResolution.y);
 
-      const imageData = inputContext.getImageData(0, 0, newWidth, newHeight);
+      const imageData = inputContext.getImageData(
+        0,
+        0,
+        videoResolution.x,
+        videoResolution.y
+      );
       const data = imageData.data;
 
       const squareSize = 5;
 
-      for (let y = 0; y < newHeight; y += squareSize) {
-        for (let x = 0; x < newWidth; x += squareSize) {
-          const indexes = getSquareIndexes(x, y, newWidth, squareSize);
+      for (let y = 0; y < videoResolution.x; y += squareSize) {
+        for (let x = 0; x < videoResolution.x; x += squareSize) {
+          const indexes = getSquareIndexes(x, y, videoResolution.x, squareSize);
           const average = getSquareAverage(data, indexes, squareSize);
 
           if (chosenFilter === "ascii") {
@@ -220,7 +270,7 @@ function FilterViewer() {
         }
       }
     };
-  }, [screenshot]);
+  }, [screenshot, chosenFilter, videoResolution]);
 
   useEffect(() => {
     if (!webcamRef) return;
@@ -235,12 +285,14 @@ function FilterViewer() {
     };
   }, []);
 
+  if (!videoResolution) return;
+
   return (
     <>
       <Webcam
         audio={false}
-        height={360}
-        width={360}
+        height={videoResolution.y}
+        width={videoResolution.x}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
