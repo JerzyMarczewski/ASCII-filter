@@ -44,6 +44,7 @@ function App() {
         dispatch(setLoaderIsDisplayed(false)); // think about moving this to the main Button component
       }
     }, 3000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
   return (
