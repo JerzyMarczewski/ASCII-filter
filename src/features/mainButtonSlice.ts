@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface MyFeatureState {
+interface mainButtonState {
   playButtonIsDisplayed: boolean;
   loaderIsDisplayed: boolean;
   reloaderIsDisplayed: boolean;
 }
 
-const initialState: MyFeatureState = {
+const initialState: mainButtonState = {
   playButtonIsDisplayed: true,
   loaderIsDisplayed: false,
   reloaderIsDisplayed: false,
