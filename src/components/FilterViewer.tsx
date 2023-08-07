@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import { webcamDimensionsType } from "../features/appStatusSlice";
+import {
+  setNextFilter,
+  setPreviousFilter,
+  webcamDimensionsType,
+} from "../features/appStatusSlice";
 import { RootState } from "../app/store";
-import { useSelector } from "react-redux";
-
-type filterType = "ascii" | "pixelized";
+import { useDispatch, useSelector } from "react-redux";
+import { Icon } from "@iconify/react";
 
 interface videoConstraintsInterface {
   width: number | undefined;
@@ -178,16 +181,18 @@ function FilterViewer() {
   const webcamDimensions = useSelector(
     (state: RootState) => state.appStatus.webcamDimensions
   );
+  const filter = useSelector((state: RootState) => state.appStatus.filter);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [videoResolution, setVideoResolution] =
     useState<webcamDimensionsType | null>(null);
   const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [chosenFilter, setChosenFilter] = useState<filterType>("pixelized");
 
   const webcamRef = useRef<Webcam | null>(null);
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const dispatch = useDispatch();
 
   const handleResize = () => {
     setWindowWidth(window.innerWidth);
@@ -262,15 +267,15 @@ function FilterViewer() {
           const indexes = getSquareIndexes(x, y, videoResolution.x, squareSize);
           const average = getSquareAverage(data, indexes, squareSize);
 
-          if (chosenFilter === "ascii") {
+          if (filter === "ascii") {
             putASCIIonSquare(outputContext, squareSize, x, y, average);
-          } else if (chosenFilter === "pixelized") {
+          } else if (filter === "pixelized") {
             colorSquareByAverage(outputContext, squareSize, x, y, average);
           }
         }
       }
     };
-  }, [screenshot, chosenFilter, videoResolution]);
+  }, [screenshot, filter, videoResolution]);
 
   useEffect(() => {
     if (!webcamRef) return;
@@ -297,11 +302,19 @@ function FilterViewer() {
         screenshotFormat="image/jpeg"
         videoConstraints={videoConstraints}
       />
-      <canvas ref={inputCanvasRef}></canvas>
-      <canvas ref={outputCanvasRef}></canvas>
+      {/* <canvas ref={inputCanvasRef}></canvas>
+      <canvas ref={outputCanvasRef}></canvas> */}
       <div className="filterOptions">
-        <button className="filterOption">ASCII</button>
-        <button className="filterOption">Pixelized</button>
+        <div
+          className="arrowWrapper"
+          onClick={() => dispatch(setPreviousFilter())}
+        >
+          <Icon icon="ic:round-arrow-left" />
+        </div>
+        <div className="chosenFilterDisplay">{filter}</div>
+        <div className="arrowWrapper" onClick={() => dispatch(setNextFilter())}>
+          <Icon icon="ic:round-arrow-right" />
+        </div>
       </div>
     </>
   );
