@@ -12,6 +12,45 @@ const CameraViewer = (props: CameraViewerPropsType) => {
   const filter = useSelector((state: RootState) => state.appStatus.filter);
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  const getAverageSquareValue = (
+    context: CanvasRenderingContext2D,
+    squareSize: number,
+    x: number,
+    y: number
+  ) => {
+    if (!props.width || !props.height) return;
+
+    const imageSquareData = context.getImageData(x, y, squareSize, squareSize);
+
+    let totalRed = 0;
+    let totalGreen = 0;
+    let totalBlue = 0;
+
+    for (let i = 0; i < imageSquareData.data.length; i += 4) {
+      const red = imageSquareData.data[i];
+      const green = imageSquareData.data[i + 1];
+      const blue = imageSquareData.data[i + 2];
+
+      totalRed += red;
+      totalGreen += green;
+      totalBlue += blue;
+    }
+
+    const totalPixels = imageSquareData.data.length * 4;
+
+    return [
+      totalRed / totalPixels,
+      totalGreen / totalPixels,
+      totalBlue / totalPixels,
+    ];
+  };
+
+  const applyPixelizedFilter = (
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    squareSize: number
+  ) => {};
+
   useEffect(() => {
     const imageCanvas = imageCanvasRef.current;
     const imageContext = imageCanvas?.getContext("2d");
