@@ -11,6 +11,9 @@ interface CameraViewerPropsType {
 const CameraViewer = (props: CameraViewerPropsType) => {
   const filter = useSelector((state: RootState) => state.appStatus.filter);
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const squareSize = 20;
 
   const getAverageSquareValue = (
     context: CanvasRenderingContext2D,
@@ -37,8 +40,13 @@ const CameraViewer = (props: CameraViewerPropsType) => {
       totalBlue += blue;
     }
 
-    const totalPixels = imageSquareData.data.length * 4;
-
+    const totalPixels = imageSquareData.data.length / 4;
+    console.log("total pixels", totalPixels);
+    console.log([
+      totalRed / totalPixels,
+      totalGreen / totalPixels,
+      totalBlue / totalPixels,
+    ]);
     return [
       totalRed / totalPixels,
       totalGreen / totalPixels,
@@ -48,6 +56,7 @@ const CameraViewer = (props: CameraViewerPropsType) => {
 
   const applyPixelizedFilter = (
     context: CanvasRenderingContext2D,
+    filteredContext: CanvasRenderingContext2D,
     squareSize: number
   ) => {
     if (!props.width || !props.height)
@@ -61,33 +70,53 @@ const CameraViewer = (props: CameraViewerPropsType) => {
           x,
           y
         );
-        context.fillStyle = `rgb(${averageSquareValue[0]}, ${averageSquareValue[1]}, ${averageSquareValue[2]})`;
-        context.fillRect(x, y, squareSize, squareSize);
+        filteredContext.fillStyle = `rgb(${averageSquareValue[0]}, ${averageSquareValue[1]}, ${averageSquareValue[2]})`;
+        filteredContext.fillRect(x, y, squareSize, squareSize);
       }
     }
   };
 
   useEffect(() => {
+    const tempCanvas = tempCanvasRef.current;
+    const tempContext = tempCanvas?.getContext("2d", {
+      willReadFrequently: true,
+    });
     const imageCanvas = imageCanvasRef.current;
-    const imageContext = imageCanvas?.getContext("2d");
+    const imageContext = imageCanvas?.getContext("2d", {
+      willReadFrequently: true,
+    });
 
-    if (!imageCanvas || !imageContext) return;
-    if (!props.imgSrc || !props.width || !props.height) return;
+    if (!tempCanvas || !tempContext || !imageCanvas || !imageContext) return;
+
+    if (!props.imgSrc)
+      throw new Error("CameraViewer has some undefined props!");
 
     const image = new Image();
     image.src = props.imgSrc;
 
     image.onload = () => {
       console.log("image loaded");
+      if (!props.width || !props.height)
+        throw new Error("CameraViewer has some undefined props!");
+      tempContext.drawImage(image, 0, 0, props.width, props.height);
       if (filter === "normal")
         imageContext.drawImage(image, 0, 0, props.width, props.height);
-      else imageContext.fillRect(0, 0, props.width, props.height);
+      else if (filter === "pixelized")
+        applyPixelizedFilter(tempContext, imageContext, squareSize);
     };
-  }, [props]);
+  }, [props, filter]);
 
   if (!props.imgSrc) return <h1>NO IMAGE SRC</h1>;
   return (
-    <canvas ref={imageCanvasRef} width={props.width} height={props.height} />
+    <>
+      <canvas
+        ref={tempCanvasRef}
+        width={props.width}
+        height={props.height}
+        // style={{ display: "none" }}
+      />
+      <canvas ref={imageCanvasRef} width={props.width} height={props.height} />
+    </>
   );
 };
 
