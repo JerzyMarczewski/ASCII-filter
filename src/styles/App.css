@@ -1,4 +1,5 @@
-.container {
+.container,
+.container-exit {
   min-height: 100vh;
   padding: 30vh 0 0 0;
   background-color: var(--background-color);
@@ -6,10 +7,6 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-}
-
-.container-exit {
-
 }
 
 .container-exit-active {
@@ -29,4 +26,12 @@
   color: var(--primary-color-1);
   text-shadow: 4px 4px var(--secondary-color-1);
   text-align: center;
+}
+
+@media only screen and (min-width: 768px) {
+  .title {
+    font-size: 6rem;
+    width: auto;
+    word-break: normal;
+  }
 }

@@ -112,3 +112,17 @@
 .reloader-exit-done {
   display: none;
 }
+
+@media only screen and (min-width: 768px) {
+  .playButton {
+    width: 6rem;
+    height: 6rem;
+    border: 7.5px solid var(--secondary-color-1);
+  }
+  
+  .playButton:after {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-width: 0.75rem 0 0.75rem 1.5rem;
+  }
+}
