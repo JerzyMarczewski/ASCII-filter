@@ -18,7 +18,8 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     x: number,
     y: number
   ) => {
-    if (!props.width || !props.height) return;
+    if (!props.width || !props.height)
+      throw new Error("CameraViewer has undefined width and height props!");
 
     const imageSquareData = context.getImageData(x, y, squareSize, squareSize);
 
@@ -46,10 +47,25 @@ const CameraViewer = (props: CameraViewerPropsType) => {
   };
 
   const applyPixelizedFilter = (
-    canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
     squareSize: number
-  ) => {};
+  ) => {
+    if (!props.width || !props.height)
+      throw new Error("CameraViewer has undefined width and height props!");
+
+    for (let y = 0; y < props.height; y += squareSize) {
+      for (let x = 0; x < props.width; x += squareSize) {
+        const averageSquareValue = getAverageSquareValue(
+          context,
+          squareSize,
+          x,
+          y
+        );
+        context.fillStyle = `rgb(${averageSquareValue[0]}, ${averageSquareValue[1]}, ${averageSquareValue[2]})`;
+        context.fillRect(x, y, squareSize, squareSize);
+      }
+    }
+  };
 
   useEffect(() => {
     const imageCanvas = imageCanvasRef.current;
