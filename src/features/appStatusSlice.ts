@@ -2,9 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type statusType = "default" | "loading" | "reload" | "final";
 export type webcamDimensionsType = { x: number; y: number };
-type filterType = "normal" | "sepia" | "ascii" | "pixelized";
+type filterType = "normal" | "grayscale" | "sepia" | "ascii" | "pixelized";
 
-const allFilters: filterType[] = ["normal", "sepia", "ascii", "pixelized"];
+const allFilters: filterType[] = [
+  "normal",
+  "grayscale",
+  "sepia",
+  "ascii",
+  "pixelized",
+];
 
 interface appStatusState {
   status: statusType;
