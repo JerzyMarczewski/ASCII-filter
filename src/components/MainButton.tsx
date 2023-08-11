@@ -35,7 +35,9 @@ const MainButton = () => {
         in={playButtonIsDisplayed}
         timeout={500}
         classNames="playButton"
-        onExited={() => dispatch(setLoaderIsDisplayed(true))}
+        onExited={() => {
+          dispatch(setLoaderIsDisplayed(true));
+        }}
         unmountOnExit
       >
         <span
@@ -52,7 +54,10 @@ const MainButton = () => {
         in={loaderIsDisplayed}
         timeout={0}
         classNames="loader"
-        onExited={() => dispatch(setReloaderIsDisplayed(true))}
+        onExited={() => {
+          dispatch(setLoaderIsDisplayed(false));
+          dispatch(setReloaderIsDisplayed(true));
+        }}
         unmountOnExit
       >
         <span ref={loaderRef} className="loader"></span>
