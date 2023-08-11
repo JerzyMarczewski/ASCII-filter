@@ -54,6 +54,31 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     ];
   };
 
+  const applyGrayscaleFilter = (
+    context: CanvasRenderingContext2D,
+    filteredContext: CanvasRenderingContext2D
+  ) => {
+    if (!props.width || !props.height)
+      throw new Error("CameraViewer has undefined width and height props!");
+
+    const imageData = context.getImageData(0, 0, props.width, props.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
+
+      data[i] = gray;
+      data[i + 1] = gray;
+      data[i + 2] = gray;
+    }
+
+    filteredContext.putImageData(imageData, 0, 0);
+  };
+
   const applySepiaFilter = (
     context: CanvasRenderingContext2D,
     filteredContext: CanvasRenderingContext2D
@@ -258,6 +283,8 @@ const CameraViewer = (props: CameraViewerPropsType) => {
       tempContext.drawImage(image, 0, 0, props.width, props.height);
       if (filter === "normal")
         imageContext.drawImage(image, 0, 0, props.width, props.height);
+      else if (filter === "grayscale")
+        applyGrayscaleFilter(tempContext, imageContext);
       else if (filter === "sepia") applySepiaFilter(tempContext, imageContext);
       else if (filter === "pixelized")
         applyPixelizedFilter(tempContext, imageContext, squareSize);
