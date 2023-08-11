@@ -46,17 +46,39 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     }
 
     const totalPixels = imageSquareData.data.length / 4;
-    console.log("total pixels", totalPixels);
-    console.log([
-      totalRed / totalPixels,
-      totalGreen / totalPixels,
-      totalBlue / totalPixels,
-    ]);
+
     return [
       totalRed / totalPixels,
       totalGreen / totalPixels,
       totalBlue / totalPixels,
     ];
+  };
+
+  const applySepiaFilter = (
+    context: CanvasRenderingContext2D,
+    filteredContext: CanvasRenderingContext2D
+  ) => {
+    if (!props.width || !props.height)
+      throw new Error("CameraViewer has undefined width and height props!");
+
+    const imageData = context.getImageData(0, 0, props.width, props.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const sepiaR = Math.min(0.393 * r + 0.769 * g + 0.189 * b, 255);
+      const sepiaG = Math.min(0.349 * r + 0.686 * g + 0.168 * b, 255);
+      const sepiaB = Math.min(0.272 * r + 0.534 * g + 0.131 * b, 255);
+
+      data[i] = sepiaR;
+      data[i + 1] = sepiaG;
+      data[i + 2] = sepiaB;
+    }
+
+    filteredContext.putImageData(imageData, 0, 0);
   };
 
   const applyPixelizedFilter = (
@@ -236,11 +258,13 @@ const CameraViewer = (props: CameraViewerPropsType) => {
       tempContext.drawImage(image, 0, 0, props.width, props.height);
       if (filter === "normal")
         imageContext.drawImage(image, 0, 0, props.width, props.height);
+      else if (filter === "sepia") applySepiaFilter(tempContext, imageContext);
       else if (filter === "pixelized")
         applyPixelizedFilter(tempContext, imageContext, squareSize);
       else if (filter === "ascii")
         applyASCIIFilter(tempContext, imageContext, squareSize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props, filter]);
 
   if (!props.imgSrc) return <h1>NO IMAGE SRC</h1>;
@@ -250,7 +274,7 @@ const CameraViewer = (props: CameraViewerPropsType) => {
         ref={tempCanvasRef}
         width={props.width}
         height={props.height}
-        // style={{ display: "none" }}
+        style={{ display: "none" }}
       />
       <canvas ref={imageCanvasRef} width={props.width} height={props.height} />
     </>
