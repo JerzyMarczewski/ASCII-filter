@@ -16,6 +16,8 @@ function App() {
 
   const containerRef = useRef(null);
 
+  const loadingTime = 1500;
+
   const isWebcamAllowed = async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -48,13 +50,14 @@ function App() {
     // remove timeout for production
     setTimeout(async () => {
       const webcamIsAllowed = await checkWebcamAccess();
+      console.log(webcamIsAllowed);
       if (webcamIsAllowed) {
         dispatch(setAppStatus("final"));
       } else {
         dispatch(setAppStatus("reload"));
         dispatch(setLoaderIsDisplayed(false)); // think about moving this to the main Button component
       }
-    }, 3000);
+    }, loadingTime);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
