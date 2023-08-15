@@ -4,6 +4,9 @@
   --secondary-color-1: #EF233C;
   --secondary-color-2: #D90429;
   --background-color: #2B2D42;
+  --main-button-width: 4rem;
+  --main-button-height: 4rem;
+  --main-button-border-width: 5px;
 }
 
 * {
