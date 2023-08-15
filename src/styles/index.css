@@ -6,7 +6,11 @@
   --background-color: #2B2D42;
   --main-button-width: 4rem;
   --main-button-height: 4rem;
-  --main-button-border-width: 5px;
+  --main-button-border-width: 0.25rem;
+  --main-button-triangle-width: 1rem;
+  --main-button-triangle-height: 1rem;
+  --main-button-triangle-border-width: 0.5rem 0 0.5rem 1rem;
+  --main-button-reloader-size: 1.5rem;
 }
 
 * {
