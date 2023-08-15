@@ -1,22 +1,23 @@
 .playButton {
   opacity: 1;
-  width: 4rem;
-  height: 4rem;
-  border: 5px solid var(--secondary-color-1);
+  width: var(--main-button-width);
+  height: var(--main-button-height);
+  border: var(--main-button-border-width) solid var(--secondary-color-1);
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
   position: relative;
+  cursor: pointer;
 }
 
 .playButton:after {
   opacity: 1;
   content: '';
   position: absolute;
-  width: 1rem;
-  height: 1rem;
+  width: var(--main-button-triangle-width);
+  height: var(--main-button-triangle-height);
   border-style: solid;
-  border-width: 0.5rem 0 0.5rem 1rem;
+  border-width: var(--main-button-triangle-border-width);
   border-color: transparent transparent transparent var(--primary-color-1);
   display: inline-block;
   box-sizing: border-box;
@@ -40,9 +41,9 @@
 }
 
 .loader {
-  width: 4rem;
-  height: 4rem;
-  border: 5px solid var(--secondary-color-1);
+  width: var(--main-button-width);
+  height: var(--main-button-height);
+  border: var(--main-button-border-width) solid var(--secondary-color-1);
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
@@ -53,9 +54,9 @@
 .loader:after {
   content: '';
   position: absolute;
-  width: 4rem;
-  height: 4rem;
-  border: 5px solid var(--primary-color-1);
+  width: var(--main-button-width);
+  height: var(--main-button-height);
+  border: var(--main-button-border-width) solid var(--primary-color-1);
   border-radius: 50%;
   display: inline-block;
   box-sizing: border-box;
@@ -63,6 +64,10 @@
   top: 50%;
   transform: translate(-50%, -50%);
   animation: scaleUp 1s linear infinite;
+}
+
+.loader.loader-enter-active {
+  display: none;
 }
 
 .loader-exit-done {
@@ -79,9 +84,9 @@
 }
 
 .reloader {
-  width: 4rem;
-  height: 4rem;
-  border: 5px solid var(--secondary-color-1);
+  width: var(--main-button-width);
+  height: var(--main-button-height);
+  border: var(--main-button-border-width) solid var(--secondary-color-1);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -95,13 +100,13 @@
 }
 
 .reloader.reloader-enter-active .reloaderIcon{
-  font-size: 1.5rem;
+  font-size: var(--main-button-reloader-size);
   transition: font-size 500ms;
 }
 
 .reloader .reloaderIcon {
+  font-size: var(--main-button-reloader-size);
   color: var(--primary-color-1);
-  font-size: 1.5rem;
 }
 
 .reloader.reloader-exit-active .reloaderIcon{
@@ -115,14 +120,42 @@
 
 @media only screen and (min-width: 768px) {
   .playButton {
-    width: 6rem;
-    height: 6rem;
-    border: 7.5px solid var(--secondary-color-1);
+    width: calc(1.5 * var(--main-button-width));
+    height: calc(1.5 * var(--main-button-height));
+    border: calc(1.5 * var(--main-button-border-width)) solid var(--secondary-color-1);
   }
   
   .playButton:after {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: calc(1.5 * var(--main-button-triangle-width));
+    height: calc(1.5 * var(--main-button-triangle-height));
     border-width: 0.75rem 0 0.75rem 1.5rem;
+  }
+
+  .loader {
+    width: calc(1.5 * var(--main-button-width));
+    height: calc(1.5 * var(--main-button-height));
+    border: 7.5px solid var(--secondary-color-1);
+  }
+  
+  .loader:after {
+    width: calc(1.5 * var(--main-button-width));
+    height: calc(1.5 * var(--main-button-height));
+    border: 5px solid var(--primary-color-1);
+  }
+
+  .reloader {
+    width: calc(1.5 * var(--main-button-width));
+    height: calc(1.5 * var(--main-button-height));
+    border: calc(1.5 * var(--main-button-border-width)) solid var(--secondary-color-1);
+  }
+  
+  .reloader.reloader-enter-active .reloaderIcon{
+    font-size: calc(1.5 * var(--main-button-reloader-size));
+    transition: font-size 500ms;
+  }
+  
+  .reloader .reloaderIcon {
+    font-size: calc(1.5 * var(--main-button-reloader-size));
+    color: var(--primary-color-1);
   }
 }
