@@ -1,19 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 
-interface CameraViewerPropsType {
-  imgSrc: string | undefined;
-  width: number | undefined;
-  height: number | undefined;
-}
-
-const CameraViewer = (props: CameraViewerPropsType) => {
+const CameraViewer = () => {
   const filter = useSelector((state: RootState) => state.appStatus.filter);
-  const imageCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const tempCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const webcamDimensions = useSelector(
+    (state: RootState) => state.appStatus.webcamDimensions
+  );
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [videoWidth, setVideoWidth] = useState<number | undefined>(undefined);
+  const [videoHeight, setVideoHeight] = useState<number | undefined>(undefined);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const squareSize = 25;
+  const timeBetweenFrames = 100;
 
   const getAverageSquareValue = (
     context: CanvasRenderingContext2D,
@@ -21,13 +25,12 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     x: number,
     y: number
   ) => {
-    if (!props.width || !props.height)
-      throw new Error("CameraViewer has undefined width and height props!");
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
 
-    const newWidth =
-      props.width - x < squareSize ? props.width - x : squareSize;
+    const newWidth = videoWidth - x < squareSize ? videoWidth - x : squareSize;
     const newHeight =
-      props.height - y < squareSize ? props.height - y : squareSize;
+      videoHeight - y < squareSize ? videoHeight - y : squareSize;
 
     const imageSquareData = context.getImageData(x, y, newWidth, newHeight);
 
@@ -58,10 +61,10 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     context: CanvasRenderingContext2D,
     filteredContext: CanvasRenderingContext2D
   ) => {
-    if (!props.width || !props.height)
-      throw new Error("CameraViewer has undefined width and height props!");
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
 
-    const imageData = context.getImageData(0, 0, props.width, props.height);
+    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -83,10 +86,10 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     context: CanvasRenderingContext2D,
     filteredContext: CanvasRenderingContext2D
   ) => {
-    if (!props.width || !props.height)
-      throw new Error("CameraViewer has undefined width and height props!");
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
 
-    const imageData = context.getImageData(0, 0, props.width, props.height);
+    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -111,11 +114,11 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     filteredContext: CanvasRenderingContext2D,
     squareSize: number
   ) => {
-    if (!props.width || !props.height)
-      throw new Error("CameraViewer has undefined width and height props!");
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
 
-    for (let y = 0; y < props.height; y += squareSize) {
-      for (let x = 0; x < props.width; x += squareSize) {
+    for (let y = 0; y < videoHeight; y += squareSize) {
+      for (let x = 0; x < videoWidth; x += squareSize) {
         const averageSquareValue = getAverageSquareValue(
           context,
           squareSize,
@@ -133,11 +136,11 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     filteredContext: CanvasRenderingContext2D,
     squareSize: number
   ) => {
-    if (!props.width || !props.height)
+    if (!videoWidth || !videoHeight)
       throw new Error("CameraViewer has undefined width and height props!");
 
     filteredContext.fillStyle = "black";
-    filteredContext.fillRect(0, 0, props.width, props.height);
+    filteredContext.fillRect(0, 0, videoWidth, videoHeight);
 
     const grayscaledASCII = [
       " ",
@@ -232,8 +235,8 @@ const CameraViewer = (props: CameraViewerPropsType) => {
       "@",
     ];
 
-    for (let y = 0; y < props.height; y += squareSize) {
-      for (let x = 0; x < props.width; x += squareSize) {
+    for (let y = 0; y < videoHeight; y += squareSize) {
+      for (let x = 0; x < videoWidth; x += squareSize) {
         const averageSquareValue = getAverageSquareValue(
           context,
           squareSize,
@@ -258,53 +261,122 @@ const CameraViewer = (props: CameraViewerPropsType) => {
     }
   };
 
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  const startWebcam = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          void videoRef.current!.play();
+        };
+      }
+    } catch (error) {
+      console.error("Error accessing webcam:", error);
+    }
+  };
+
   useEffect(() => {
-    const tempCanvas = tempCanvasRef.current;
-    const tempContext = tempCanvas?.getContext("2d", {
-      willReadFrequently: true,
-    });
-    const imageCanvas = imageCanvasRef.current;
-    const imageContext = imageCanvas?.getContext("2d", {
-      willReadFrequently: true,
-    });
+    window.addEventListener("resize", handleResize);
 
-    if (!tempCanvas || !tempContext || !imageCanvas || !imageContext) return;
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-    if (!props.imgSrc)
-      throw new Error("CameraViewer has some undefined props!");
+  useEffect(() => {
+    void startWebcam();
+  }, []);
 
-    const image = new Image();
-    image.src = props.imgSrc;
+  useEffect(() => {
+    if (!videoHeight || !videoWidth) return;
 
-    image.onload = () => {
-      console.log("image loaded");
-      if (!props.width || !props.height)
-        throw new Error("CameraViewer has some undefined props!");
-      tempContext.drawImage(image, 0, 0, props.width, props.height);
+    const interval = setInterval(() => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      const inputCanvas = inputCanvasRef.current;
+      const outputCanvas = outputCanvasRef.current;
+      if (!inputCanvas || !outputCanvas) return;
+
+      const inputContext = inputCanvas.getContext("2d");
+      const outputContext = outputCanvas.getContext("2d");
+      if (!inputContext || !outputContext) return;
+
+      inputContext.drawImage(video, 0, 0, videoWidth, videoHeight);
+
       if (filter === "normal")
-        imageContext.drawImage(image, 0, 0, props.width, props.height);
+        outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
       else if (filter === "grayscale")
-        applyGrayscaleFilter(tempContext, imageContext);
-      else if (filter === "sepia") applySepiaFilter(tempContext, imageContext);
+        applyGrayscaleFilter(inputContext, outputContext);
+      else if (filter === "sepia")
+        applySepiaFilter(inputContext, outputContext);
       else if (filter === "pixelized")
-        applyPixelizedFilter(tempContext, imageContext, squareSize);
+        applyPixelizedFilter(inputContext, outputContext, squareSize);
       else if (filter === "ascii")
-        applyASCIIFilter(tempContext, imageContext, squareSize);
+        applyASCIIFilter(inputContext, outputContext, squareSize);
+    }, timeBetweenFrames);
+
+    return () => {
+      clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props, filter]);
+  }, [videoWidth, videoHeight, filter]);
 
-  if (!props.imgSrc) return <h1>NO IMAGE SRC</h1>;
+  useEffect(() => {
+    if (!webcamDimensions) return;
+
+    let newWidth = videoWidth ?? webcamDimensions.x;
+    let newHeight = videoHeight ?? webcamDimensions.y;
+
+    if (windowWidth < newWidth) {
+      newWidth = newWidth / 2;
+      newHeight = newHeight / 2;
+    }
+
+    if (windowWidth > 2 * newWidth && 2 * newWidth <= 720) {
+      newWidth = newWidth * 2;
+      newHeight = newHeight * 2;
+    }
+
+    setVideoWidth(newWidth);
+    setVideoHeight(newHeight);
+  }, [webcamDimensions, windowWidth, videoWidth, videoHeight]);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+
+    if (!inputCanvasRef.current) return;
+    const inputCanvas = inputCanvasRef.current;
+
+    if (!outputCanvasRef.current) return;
+    const outputCanvas = outputCanvasRef.current;
+
+    if (!videoHeight || !videoWidth) return;
+    inputCanvas.width = videoWidth;
+    inputCanvas.height = videoHeight;
+    outputCanvas.width = videoWidth;
+    outputCanvas.height = videoHeight;
+    video.style.width = `${videoWidth}px`;
+    video.style.height = `${videoHeight}px`;
+  }, [videoWidth, videoHeight]);
+
   return (
-    <>
-      <canvas
-        ref={tempCanvasRef}
-        width={props.width}
-        height={props.height}
+    <div>
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
         style={{ display: "none" }}
       />
-      <canvas ref={imageCanvasRef} width={props.width} height={props.height} />
-    </>
+      <canvas ref={inputCanvasRef} style={{ display: "none" }} />
+      <canvas ref={outputCanvasRef} />
+    </div>
   );
 };
 
