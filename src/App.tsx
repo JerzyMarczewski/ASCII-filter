@@ -15,6 +15,7 @@ function App() {
   const dispatch = useDispatch();
 
   const containerRef = useRef(null);
+  const waringRef = useRef(null);
 
   const loadingTime = 1500;
 
@@ -50,7 +51,6 @@ function App() {
     // remove timeout for production
     setTimeout(async () => {
       const webcamIsAllowed = await checkWebcamAccess();
-      console.log(webcamIsAllowed);
       if (webcamIsAllowed) {
         dispatch(setAppStatus("final"));
       } else {
@@ -62,17 +62,34 @@ function App() {
   }, [status]);
 
   return (
-    <CSSTransition
-      nodeRef={containerRef}
-      in={status !== "final"}
-      timeout={500}
-      classNames="container"
-    >
-      <div ref={containerRef} className="container">
-        <h1 className="title">ASCII Filter</h1>
-        {status === "final" ? <FilterViewer /> : <MainButton />}
-      </div>
-    </CSSTransition>
+    <>
+      <CSSTransition
+        nodeRef={containerRef}
+        in={status !== "final"}
+        timeout={500}
+        classNames="container"
+      >
+        <div ref={containerRef} className="container">
+          <h1 className="title">ASCII Filter</h1>
+          {status === "final" ? <FilterViewer /> : <MainButton />}
+        </div>
+      </CSSTransition>
+      <CSSTransition
+        nodeRef={waringRef}
+        in={status === "reload"}
+        timeout={250}
+        classNames="warning"
+        enter
+      >
+        <div ref={waringRef} className="warning">
+          <h3>WARNING!</h3>
+          <p>
+            You need to allow the use of a webcam to use this application.
+            Change the browser setting and refresh the application.
+          </p>
+        </div>
+      </CSSTransition>
+    </>
   );
 }
 
