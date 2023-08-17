@@ -93,6 +93,7 @@
   align-items: center;
   box-sizing: border-box;
   position: relative;
+  cursor: pointer;
 }
 
 .reloader.reloader-enter .reloaderIcon{
@@ -140,7 +141,7 @@
   .loader:after {
     width: calc(1.5 * var(--main-button-width));
     height: calc(1.5 * var(--main-button-height));
-    border: 5px solid var(--primary-color-1);
+    border: 7.5px solid var(--primary-color-1);
   }
 
   .reloader {
