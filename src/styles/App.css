@@ -111,4 +111,43 @@
     width: auto;
     word-break: normal;
   }
+
+  .warning {
+    margin: auto 15% 2rem 15%;
+    padding: 2rem 4rem;
+    width: 70%;
+    border: 0.4rem solid var(--secondary-color-1);
+  }
+  
+  .warning > h3 {
+    margin-bottom: 0.5em;
+  }
+  
+  .warning.warning-enter {
+    margin: auto 15% 2rem 15%;
+  }
+  
+  .warning.warning-enter-active {
+    font-size: 1rem;
+    padding: 3em 6em;
+    border-width: 0.4rem;
+    transition-property: font-size, max-height, border-width, padding, color;
+    transition-duration: 250ms;
+  }
+  
+  .warning.warning-enter-done {
+    font-size: 1rem;
+    padding: 3em 6em;
+    border-width: 0.4rem;
+  }
+  
+  .warning.warning-exit {
+    font-size: 1rem;
+    padding: 3em 6em;
+    border-width: 0.4rem;
+  }
+  
+  .warning.warning-exit-done {
+    margin: auto 15% 2rem 15%;
+  }
 }
