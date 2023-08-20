@@ -180,3 +180,32 @@
     border-width: 0.5rem;
   }
 }
+
+@media only screen and (min-width: 1440px) {
+  .title {
+    font-size: 8rem;
+  }
+
+  .warning {
+    margin: auto 25% 3rem 25%;
+    width: 50%;
+    border: 0.5rem solid var(--secondary-color-1);
+  }
+  
+  .warning > h3 {
+    margin-bottom: 0.5em;
+  }
+  
+  .warning.warning-enter,
+  .warning.warning-exit-done {
+    margin: auto 25% 3rem 25%;
+  }
+
+  .warning.warning-enter-active,
+  .warning.warning-enter-done,
+  .warning.warning-exit {
+    font-size: 1rem;
+    padding: 2em 4em;
+    border-width: 0.5rem;
+  }
+}
