@@ -58,7 +58,7 @@ const CameraViewer = () => {
     ];
   };
 
-  const getGammaCorrectedImageData = (context: CanvasRenderingContext2D) => {
+  const applyGammaCorrection = (context: CanvasRenderingContext2D) => {
     if (!videoWidth || !videoHeight)
       throw new Error("CameraViewer has undefined width and height!");
 
@@ -81,7 +81,7 @@ const CameraViewer = () => {
       data[i + 2] = correctedB;
     }
 
-    return imageData;
+    context.putImageData(imageData, 0, 0);
   };
 
   const applyGrayscaleFilter = (
@@ -91,7 +91,7 @@ const CameraViewer = () => {
     if (!videoWidth || !videoHeight)
       throw new Error("CameraViewer has undefined width and height!");
 
-    const imageData = getGammaCorrectedImageData(context);
+    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -333,9 +333,8 @@ const CameraViewer = () => {
       const outputContext = outputCanvas.getContext("2d");
       if (!inputContext || !outputContext) return;
 
-      inputContext.scale(-1, 1);
-      inputContext.drawImage(video, -videoWidth, 0, videoWidth, videoHeight);
-      inputContext.restore();
+      inputContext.drawImage(video, 0, 0, videoWidth, videoHeight);
+      applyGammaCorrection(inputContext);
 
       if (filter === "normal") {
         outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
@@ -404,7 +403,7 @@ const CameraViewer = () => {
         playsInline
         style={{ display: "none" }}
       />
-      <canvas ref={inputCanvasRef} style={{ display: "none" }} />
+      <canvas ref={inputCanvasRef} />
       <canvas ref={outputCanvasRef} />
     </div>
   );
