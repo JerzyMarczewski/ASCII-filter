@@ -18,6 +18,7 @@ const CameraViewer = () => {
 
   const squareSize = 25;
   const timeBetweenFrames = 100;
+  const gamma = 2;
 
   const getAverageSquareValue = (
     context: CanvasRenderingContext2D,
@@ -57,6 +58,32 @@ const CameraViewer = () => {
     ];
   };
 
+  const getGammaCorrectedImageData = (context: CanvasRenderingContext2D) => {
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
+
+    if (!gamma) throw new Error("CameraViewer has undefined gamma!");
+
+    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      const correctedR = Math.pow(r / 255, gamma) * 255;
+      const correctedG = Math.pow(g / 255, gamma) * 255;
+      const correctedB = Math.pow(b / 255, gamma) * 255;
+
+      data[i] = correctedR;
+      data[i + 1] = correctedG;
+      data[i + 2] = correctedB;
+    }
+
+    return imageData;
+  };
+
   const applyGrayscaleFilter = (
     context: CanvasRenderingContext2D,
     filteredContext: CanvasRenderingContext2D
@@ -64,7 +91,7 @@ const CameraViewer = () => {
     if (!videoWidth || !videoHeight)
       throw new Error("CameraViewer has undefined width and height!");
 
-    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
+    const imageData = getGammaCorrectedImageData(context);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -310,16 +337,17 @@ const CameraViewer = () => {
       inputContext.drawImage(video, -videoWidth, 0, videoWidth, videoHeight);
       inputContext.restore();
 
-      if (filter === "normal")
+      if (filter === "normal") {
         outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
-      else if (filter === "grayscale")
+      } else if (filter === "grayscale") {
         applyGrayscaleFilter(inputContext, outputContext);
-      else if (filter === "sepia")
+      } else if (filter === "sepia") {
         applySepiaFilter(inputContext, outputContext);
-      else if (filter === "pixelized")
+      } else if (filter === "pixelized") {
         applyPixelizedFilter(inputContext, outputContext, squareSize);
-      else if (filter === "ascii")
+      } else if (filter === "ascii") {
         applyASCIIFilter(inputContext, outputContext, squareSize);
+      }
     }, timeBetweenFrames);
 
     return () => {
