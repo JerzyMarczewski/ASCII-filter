@@ -84,6 +84,29 @@ const CameraViewer = () => {
     context.putImageData(imageData, 0, 0);
   };
 
+  const flipCanvas = (context: CanvasRenderingContext2D) => {
+    if (!videoWidth || !videoHeight)
+      throw new Error("CameraViewer has undefined width and height!");
+
+    const imageData = context.getImageData(0, 0, videoWidth, videoHeight);
+    const data = imageData.data;
+
+    for (let y = 0; y < videoHeight; y++) {
+      for (let x = 0; x < videoWidth / 2; x++) {
+        const pixelIndex = (y * videoWidth + x) * 4;
+        const oppositePixelIndex = (y * videoWidth + (videoWidth - x - 1)) * 4;
+
+        // Swap the pixel values (R, G, B, A)
+        for (let i = 0; i < 4; i++) {
+          const temp = data[pixelIndex + i];
+          data[pixelIndex + i] = data[oppositePixelIndex + i];
+          data[oppositePixelIndex + i] = temp;
+        }
+      }
+    }
+    context.putImageData(imageData, 0, 0);
+  };
+
   const applyGrayscaleFilter = (
     context: CanvasRenderingContext2D,
     filteredContext: CanvasRenderingContext2D
@@ -335,6 +358,7 @@ const CameraViewer = () => {
 
       inputContext.drawImage(video, 0, 0, videoWidth, videoHeight);
       applyGammaCorrection(inputContext);
+      flipCanvas(inputContext);
 
       if (filter === "normal") {
         outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
