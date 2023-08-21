@@ -306,7 +306,9 @@ const CameraViewer = () => {
       const outputContext = outputCanvas.getContext("2d");
       if (!inputContext || !outputContext) return;
 
-      inputContext.drawImage(video, 0, 0, videoWidth, videoHeight);
+      inputContext.scale(-1, 1);
+      inputContext.drawImage(video, -videoWidth, 0, videoWidth, videoHeight);
+      inputContext.restore();
 
       if (filter === "normal")
         outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
