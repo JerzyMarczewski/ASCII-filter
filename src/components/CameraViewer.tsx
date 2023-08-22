@@ -18,7 +18,7 @@ const CameraViewer = () => {
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const squareSize = 15;
+  const squareSize = 5;
   const timeBetweenFrames = 100;
   const gamma = 1;
 
