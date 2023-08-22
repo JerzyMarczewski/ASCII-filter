@@ -82,14 +82,10 @@ const appStatusSlice = createSlice({
       const index = allFilters.indexOf(state.filter);
       state.filter = allFilters[(index + 1) % allFilters.length];
     },
-    changeGammaSetting(
-      state,
-      actions: { payload: { filter: filterType; value: number } }
-    ) {
-      const selectedFilterSettings =
-        state.filterSettings[actions.payload.filter];
+    changeGammaSetting(state, actions: { payload: number }) {
+      const selectedFilterSettings = state.filterSettings[state.filter];
       if ("gamma" in selectedFilterSettings)
-        selectedFilterSettings["gamma"] = actions.payload.value;
+        selectedFilterSettings["gamma"] = actions.payload;
     },
   },
 });
