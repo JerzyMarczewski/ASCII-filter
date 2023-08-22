@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
+import "../styles/index.css";
+import "../styles/CameraViewer.css";
 
 const CameraViewer = () => {
   const filter = useSelector((state: RootState) => state.appStatus.filter);
@@ -16,9 +18,9 @@ const CameraViewer = () => {
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const squareSize = 25;
+  const squareSize = 15;
   const timeBetweenFrames = 100;
-  const gamma = 2;
+  const gamma = 1;
 
   const getAverageSquareValue = (
     context: CanvasRenderingContext2D,
@@ -420,15 +422,9 @@ const CameraViewer = () => {
 
   return (
     <div>
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        style={{ display: "none" }}
-      />
-      <canvas ref={inputCanvasRef} />
-      <canvas ref={outputCanvasRef} />
+      <video ref={videoRef} className="video" autoPlay muted playsInline />
+      <canvas ref={inputCanvasRef} className="inputCanvas" />
+      <canvas ref={outputCanvasRef} className="outputCanvas" />
     </div>
   );
 };
