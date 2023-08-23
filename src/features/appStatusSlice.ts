@@ -103,6 +103,10 @@ const appStatusSlice = createSlice({
       selectedFilterSettings[actions.payload.settingName] =
         actions.payload.value;
     },
+    resetFilterSettings(state, actions: { payload: filterType }) {
+      state.filterSettings[actions.payload] =
+        initialFilterSettings[actions.payload];
+    },
   },
 });
 
@@ -112,6 +116,7 @@ export const {
   setPreviousFilter,
   setNextFilter,
   changeSetting,
+  resetFilterSettings,
 } = appStatusSlice.actions;
 
 export default appStatusSlice.reducer;
