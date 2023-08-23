@@ -95,10 +95,13 @@ const appStatusSlice = createSlice({
       const index = allFilters.indexOf(state.filter);
       state.filter = allFilters[(index + 1) % allFilters.length];
     },
-    changeGammaSetting(state, actions: { payload: number }) {
+    changeSetting(
+      state,
+      actions: { payload: { settingName: settingType; value: number } }
+    ) {
       const selectedFilterSettings = state.filterSettings[state.filter];
-      if ("gamma" in selectedFilterSettings)
-        selectedFilterSettings["gamma"] = actions.payload;
+      selectedFilterSettings[actions.payload.settingName] =
+        actions.payload.value;
     },
   },
 });
@@ -108,7 +111,7 @@ export const {
   setWebcamDimensions,
   setPreviousFilter,
   setNextFilter,
-  changeGammaSetting,
+  changeSetting,
 } = appStatusSlice.actions;
 
 export default appStatusSlice.reducer;
