@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
-import { changeGammaSetting, settingType } from "../features/appStatusSlice";
+import { changeSetting, settingType } from "../features/appStatusSlice";
 
 interface SettingProps {
   settingName: settingType;
@@ -25,12 +25,8 @@ const Setting = (props: SettingProps) => {
 
   if (selectedSettingValue === undefined) return;
 
-  return (
-    <div>
-      <div>
-        <div>{props.settingName}</div>
-        <div>{selectedFilterSetting[props.settingName]}</div>
-      </div>
+  const slider =
+    props.settingName === "gamma" ? (
       <input
         type="range"
         name=""
@@ -39,10 +35,40 @@ const Setting = (props: SettingProps) => {
         max={selectedSettingLimits.max * 100}
         value={selectedSettingValue * 100}
         onChange={(event) => {
-          if (props.settingName === "gamma")
-            dispatch(changeGammaSetting(parseInt(event.target.value) / 100));
+          dispatch(
+            changeSetting({
+              settingName: props.settingName,
+              value: parseInt(event.target.value) / 100,
+            })
+          );
         }}
       />
+    ) : (
+      <input
+        type="range"
+        name=""
+        id=""
+        min={selectedSettingLimits.min}
+        max={selectedSettingLimits.max}
+        value={selectedSettingValue}
+        onChange={(event) => {
+          dispatch(
+            changeSetting({
+              settingName: props.settingName,
+              value: parseInt(event.target.value),
+            })
+          );
+        }}
+      />
+    );
+
+  return (
+    <div>
+      <div>
+        <div>{props.settingName}</div>
+        <div>{selectedFilterSetting[props.settingName]}</div>
+      </div>
+      {slider}
     </div>
   );
 };
