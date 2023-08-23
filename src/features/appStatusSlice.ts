@@ -9,12 +9,9 @@ export type filterType =
   | "ascii"
   | "pixelized";
 export type settingType = "gamma" | "squareSize";
-interface filterSettingsInterface {
-  [key: string]: { [setting: string]: number };
-}
 
-type FilterSettingsType = {
-  [key in filterType]: { [setting in settingType]: number };
+export type FilterSettingsType = {
+  [key in filterType]: { [setting in settingType]: number | undefined };
 };
 
 const allFilters: filterType[] = [
@@ -29,20 +26,24 @@ interface appStatusState {
   status: statusType;
   webcamDimensions: webcamDimensionsType | undefined;
   filter: filterType;
-  filterSettings: filterSettingsInterface;
+  filterSettings: FilterSettingsType;
 }
 
-const initialFilterSettings: filterSettingsInterface = {
+const initialFilterSettings: FilterSettingsType = {
   normal: {
     gamma: 1,
+    squareSize: undefined,
   },
   grayscale: {
     gamma: 1,
+    squareSize: undefined,
   },
   sepia: {
     gamma: 1,
+    squareSize: undefined,
   },
   ascii: {
+    gamma: 1,
     squareSize: 10,
   },
   pixelized: {
