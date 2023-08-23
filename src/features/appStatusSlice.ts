@@ -8,9 +8,14 @@ export type filterType =
   | "sepia"
   | "ascii"
   | "pixelized";
+export type settingType = "gamma" | "squareSize";
 interface filterSettingsInterface {
   [key: string]: { [setting: string]: number };
 }
+
+type FilterSettingsType = {
+  [key in filterType]: { [setting in settingType]: number };
+};
 
 const allFilters: filterType[] = [
   "normal",
