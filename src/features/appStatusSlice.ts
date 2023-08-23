@@ -2,25 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type statusType = "default" | "loading" | "reload" | "final";
 export type webcamDimensionsType = { x: number; y: number };
-type filterType = "normal" | "grayscale" | "sepia" | "ascii" | "pixelized";
-type filterSettingsType = {
-  normal: {
-    gamma: number;
-  };
-  grayscale: {
-    gamma: number;
-  };
-  sepia: {
-    gamma: number;
-  };
-  ascii: {
-    squareSize: number;
-  };
-  pixelized: {
-    gamma: number;
-    squareSize: number;
-  };
-};
+export type filterType =
+  | "normal"
+  | "grayscale"
+  | "sepia"
+  | "ascii"
+  | "pixelized";
+interface filterSettingsInterface {
+  [key: string]: { [setting: string]: number };
+}
 
 const allFilters: filterType[] = [
   "normal",
@@ -34,10 +24,10 @@ interface appStatusState {
   status: statusType;
   webcamDimensions: webcamDimensionsType | undefined;
   filter: filterType;
-  filterSettings: filterSettingsType;
+  filterSettings: filterSettingsInterface;
 }
 
-const initialFilterSettings: filterSettingsType = {
+const initialFilterSettings: filterSettingsInterface = {
   normal: {
     gamma: 1,
   },
