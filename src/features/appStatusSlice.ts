@@ -10,8 +10,12 @@ export type filterType =
   | "pixelized";
 export type settingType = "gamma" | "squareSize";
 
-export type FilterSettingsType = {
-  [key in filterType]: { [setting in settingType]: number | undefined };
+export type filterSettingsType = {
+  [filterName in filterType]: { [setting in settingType]: number | undefined };
+};
+
+type settingLimits = {
+  [settingName in settingType]: { min: number; max: number };
 };
 
 const allFilters: filterType[] = [
@@ -26,10 +30,11 @@ interface appStatusState {
   status: statusType;
   webcamDimensions: webcamDimensionsType | undefined;
   filter: filterType;
-  filterSettings: FilterSettingsType;
+  filterSettings: filterSettingsType;
+  settingsLimits: settingLimits;
 }
 
-const initialFilterSettings: FilterSettingsType = {
+const initialFilterSettings: filterSettingsType = {
   normal: {
     gamma: 1,
     squareSize: undefined,
@@ -52,11 +57,23 @@ const initialFilterSettings: FilterSettingsType = {
   },
 };
 
+const initialSettingsLimits: settingLimits = {
+  gamma: {
+    min: 0.1,
+    max: 2.1,
+  },
+  squareSize: {
+    min: 5,
+    max: 50,
+  },
+};
+
 const initialState: appStatusState = {
   status: "default",
   webcamDimensions: undefined,
   filter: "normal",
   filterSettings: initialFilterSettings,
+  settingsLimits: initialSettingsLimits,
 };
 
 const appStatusSlice = createSlice({
