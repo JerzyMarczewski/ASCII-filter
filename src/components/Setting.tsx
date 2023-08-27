@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { changeSetting, settingType } from "../features/appStatusSlice";
+import "../styles/index.css";
+import "../styles/Setting.css";
 
 interface SettingProps {
   settingName: settingType;
@@ -28,6 +30,7 @@ const Setting = (props: SettingProps) => {
   const slider =
     props.settingName === "gamma" ? (
       <input
+        className="slider"
         type="range"
         name=""
         id=""
@@ -45,6 +48,7 @@ const Setting = (props: SettingProps) => {
       />
     ) : (
       <input
+        className="slider"
         type="range"
         name=""
         id=""
@@ -63,10 +67,13 @@ const Setting = (props: SettingProps) => {
     );
 
   return (
-    <div>
-      <div>
-        <div>{props.settingName}</div>
-        <div>{selectedFilterSetting[props.settingName]}</div>
+    <div className="setting">
+      <div className="settingNameAndValue">
+        {props.settingName === "gamma" ? <div>Gamma</div> : ""}
+        {props.settingName === "squareSize" ? <div>Square size</div> : ""}
+        <div className="settingValue">
+          {selectedFilterSetting[props.settingName]}
+        </div>
       </div>
       {slider}
     </div>
