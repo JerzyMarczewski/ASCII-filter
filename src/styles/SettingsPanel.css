@@ -1,0 +1,20 @@
+.settingsPanel {
+  width: 100%;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  color: var(--primary-color-1);
+}
+
+.resetButton {
+  margin: 1rem 0 ;
+  padding: 0.5rem 1rem;
+  color: var(--primary-color-1);
+  background: var(--secondary-color-1);
+  border: none;
+  border-radius: 0.25rem;
+  outline: none;
+}
