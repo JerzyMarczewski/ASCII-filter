@@ -5,7 +5,12 @@ import "../styles/index.css";
 import "../styles/CameraViewer.css";
 
 const CameraViewer = () => {
-  const filter = useSelector((state: RootState) => state.appStatus.filter);
+  const selectedFilter = useSelector(
+    (state: RootState) => state.appStatus.filter
+  );
+  const filterSettings = useSelector(
+    (state: RootState) => state.appStatus.filterSettings
+  );
   const webcamDimensions = useSelector(
     (state: RootState) => state.appStatus.webcamDimensions
   );
@@ -18,9 +23,13 @@ const CameraViewer = () => {
   const inputCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const outputCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const squareSize = 5;
+  const selectedFilterSetting = filterSettings[selectedFilter];
+  const gamma = selectedFilterSetting["gamma"];
+  const squareSize = selectedFilterSetting["squareSize"]
+    ? selectedFilterSetting["squareSize"]
+    : 1;
+
   const timeBetweenFrames = 100;
-  const gamma = 1;
 
   const getAverageSquareValue = (
     context: CanvasRenderingContext2D,
@@ -362,15 +371,15 @@ const CameraViewer = () => {
       applyGammaCorrection(inputContext);
       flipCanvas(inputContext);
 
-      if (filter === "normal") {
+      if (selectedFilter === "normal") {
         outputContext.drawImage(inputCanvas, 0, 0, videoWidth, videoHeight);
-      } else if (filter === "grayscale") {
+      } else if (selectedFilter === "grayscale") {
         applyGrayscaleFilter(inputContext, outputContext);
-      } else if (filter === "sepia") {
+      } else if (selectedFilter === "sepia") {
         applySepiaFilter(inputContext, outputContext);
-      } else if (filter === "pixelized") {
+      } else if (selectedFilter === "pixelized") {
         applyPixelizedFilter(inputContext, outputContext, squareSize);
-      } else if (filter === "ascii") {
+      } else if (selectedFilter === "ascii") {
         applyASCIIFilter(inputContext, outputContext, squareSize);
       }
     }, timeBetweenFrames);
@@ -379,7 +388,7 @@ const CameraViewer = () => {
       clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoWidth, videoHeight, filter]);
+  }, [videoWidth, videoHeight, selectedFilter, gamma, squareSize]);
 
   useEffect(() => {
     if (!webcamDimensions) return;
