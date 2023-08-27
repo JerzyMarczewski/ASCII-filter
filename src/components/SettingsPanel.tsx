@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import Setting from "./Setting";
 import { resetFilterSettings, settingType } from "../features/appStatusSlice";
+import "../styles/index.css";
+import "../styles/SettingsPanel.css";
 
 const SettingsPanel = () => {
   const selectedFilter = useSelector(
@@ -16,14 +18,17 @@ const SettingsPanel = () => {
   const selectedFilterSetting = filterSettings[selectedFilter];
 
   const settings = Object.keys(selectedFilterSetting).map((setting) => (
-    <Setting settingName={setting as settingType} />
+    <Setting key={setting} settingName={setting as settingType} />
   ));
 
   return (
-    <div>
+    <div className="settingsPanel">
       {settings}
-      <button onClick={() => dispatch(resetFilterSettings(selectedFilter))}>
-        reset
+      <button
+        className="resetButton"
+        onClick={() => dispatch(resetFilterSettings(selectedFilter))}
+      >
+        RESET
       </button>
     </div>
   );
