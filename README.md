@@ -13,3 +13,5 @@ Thanks to the Computer Graphics courses during my studies, I became interested i
 - react-transition-group
 - Redux
 - TypeScript
+
+[Click to view the demo](https://ascii-filter.onrender.com)
